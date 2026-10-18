@@ -7,6 +7,10 @@ This repository contains two small Windows examples for exporting a Microsoft Ac
 
 ## C++/MFC desktop version
 
+![Окно приложения Access → CSV](AccessCsvExporter.Mfc/screenshots/main-window.jpg)
+
+В окне можно выбрать базу Access, загрузить список таблиц и выгрузить выбранную таблицу в CSV. Исходники и проект Visual Studio находятся в папке `AccessCsvExporter.Mfc`.
+
 Open `AccessCsvExporter.Mfc/AccessCsvExporter.Mfc.sln` in Visual Studio 2022. In Visual Studio Installer, select **Modify → Individual components → C++ MFC for latest v143 build tools (x86 & x64)**. Also install the MSVC v143 x64 tools and Windows SDK. Select **Release | x64** and **Build Solution**. Run `AccessCsvExporter.Mfc/build/Release/AccessCsvExporter.Mfc.exe`. A prebuilt x64 EXE is also available from the latest successful [GitHub Actions run](https://github.com/pepelaz1/access-csv-exporter/actions/workflows/mfc-windows.yml) under **Artifacts → AccessCsvExporter-MFC-x64**.
 
 The 64-bit Microsoft Access ODBC driver (`Microsoft Access Driver (*.mdb, *.accdb)`) must be installed. The application reads table names through ODBC, streams rows into a UTF-8 CSV with a BOM, doubles embedded quotes, quotes fields containing commas or line breaks, and replaces the destination only after a complete export. Binary columns are explicitly rejected by this small demo. Access itself is not required, but the matching ODBC driver is.
