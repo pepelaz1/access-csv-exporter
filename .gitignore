@@ -1,0 +1,6 @@
+bin/
+obj/
+*.accdb
+*.mdb
+*.csv
+!sample/*.csv
