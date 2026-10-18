@@ -9,10 +9,10 @@ int main()
 {
     std::ostringstream output;
     access_csv::WriteCsvRow(output, {L"Code", L"Description", L"Note"});
-    access_csv::WriteCsvRow(output, {L"42", L"Камера, 4K \"Pro\"\nновая", L""});
+    access_csv::WriteCsvRow(output, {L"42", L"Café, 4K \"Pro\"\nnew", L""});
     const std::string expected =
         "Code,Description,Note\r\n"
-        "42,\"Камера, 4K \"\"Pro\"\"\nновая\",\r\n";
+        "42,\"Café, 4K \"\"Pro\"\"\nnew\",\r\n";
     if (output.str() != expected)
     {
         std::cerr << "CSV quoting or Unicode formatting failed. Output bytes: "

@@ -49,36 +49,36 @@ namespace
             cardBrush_.CreateSolidBrush(RGB(255, 255, 255));
             pageBrush_.CreateSolidBrush(RGB(246, 248, 252));
 
-            heading_.Create(L"Экспорт из Access в CSV", WS_CHILD | WS_VISIBLE,
+            heading_.Create(L"Export Access data to CSV", WS_CHILD | WS_VISIBLE,
                 CRect(28, 21, 690, 58), this);
-            subtitle_.Create(L"Выберите базу данных, таблицу и место для сохранения файла.",
+            subtitle_.Create(L"Choose a database, select a table, and save the result.",
                 WS_CHILD | WS_VISIBLE, CRect(29, 70, 690, 94), this);
 
-            databaseLabel_.Create(L"БАЗА ДАННЫХ ACCESS  ·  .ACCDB / .MDB", WS_CHILD | WS_VISIBLE,
+            databaseLabel_.Create(L"ACCESS DATABASE  ·  .ACCDB / .MDB", WS_CHILD | WS_VISIBLE,
                 CRect(42, 153, 680, 174), this);
             databaseEdit_.Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL,
                 CRect(42, 179, 564, 212), this, 2001);
-            databaseBrowse_.Create(L"Обзор...", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
+            databaseBrowse_.Create(L"Browse...", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
                 CRect(577, 179, 698, 212), this, idDatabaseBrowse);
 
-            tableLabel_.Create(L"ТАБЛИЦА", WS_CHILD | WS_VISIBLE,
+            tableLabel_.Create(L"TABLE", WS_CHILD | WS_VISIBLE,
                 CRect(42, 230, 680, 251), this);
             tableCombo_.Create(WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_TABSTOP | CBS_DROPDOWNLIST,
                 CRect(42, 255, 564, 450), this, 2002);
-            loadTables_.Create(L"Загрузить", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
+            loadTables_.Create(L"Load tables", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
                 CRect(577, 255, 698, 288), this, idTableLoad);
 
-            outputLabel_.Create(L"ФАЙЛ CSV  ·  UTF-8", WS_CHILD | WS_VISIBLE,
+            outputLabel_.Create(L"OUTPUT CSV  ·  UTF-8", WS_CHILD | WS_VISIBLE,
                 CRect(42, 306, 680, 327), this);
             outputEdit_.Create(WS_CHILD | WS_VISIBLE | WS_BORDER | WS_TABSTOP | ES_AUTOHSCROLL,
                 CRect(42, 331, 564, 364), this, 2003);
-            outputBrowse_.Create(L"Обзор...", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
+            outputBrowse_.Create(L"Browse...", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
                 CRect(577, 331, 698, 364), this, idOutputBrowse);
 
-            exportButton_.Create(L"Экспортировать", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
+            exportButton_.Create(L"Export CSV", WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_DEFPUSHBUTTON,
                 CRect(22, 400, 190, 440), this, idExport);
             exportButton_.EnableWindow(FALSE);
-            status_.Create(L"Начните с выбора файла базы данных Access.",
+            status_.Create(L"Start by choosing an Access database file.",
                 WS_CHILD | WS_VISIBLE, CRect(209, 403, 705, 439), this);
 
             heading_.SetFont(&titleFont_);
@@ -135,7 +135,7 @@ namespace
             if (dialog.DoModal() != IDOK) return;
             databaseEdit_.SetWindowText(dialog.GetPathName());
             tableCombo_.ResetContent();
-            status_.SetWindowText(L"База выбрана. Загружаю список таблиц...");
+            status_.SetWindowText(L"Database selected. Loading tables...");
             try
             {
                 const std::filesystem::path path(dialog.GetPathName().GetString());
@@ -152,7 +152,7 @@ namespace
             databaseEdit_.GetWindowText(database);
             if (database.IsEmpty())
             {
-                AfxMessageBox(L"Сначала выберите базу данных Access.", MB_ICONINFORMATION);
+                AfxMessageBox(L"Choose an Access database first.", MB_ICONINFORMATION);
                 return;
             }
             try
@@ -163,15 +163,15 @@ namespace
                 if (!tables.empty()) tableCombo_.SetCurSel(0);
                 exportButton_.EnableWindow(!tables.empty());
                 CString status;
-                status.Format(L"Найдено таблиц: %llu. Выберите файл CSV и нажмите «Экспортировать».",
+                status.Format(L"Found %llu table(s). Choose an output file, then click Export CSV.",
                     static_cast<unsigned long long>(tables.size()));
                 status_.SetWindowText(status);
-                if (tables.empty()) AfxMessageBox(L"В базе нет пользовательских таблиц.", MB_ICONINFORMATION);
+                if (tables.empty()) AfxMessageBox(L"No user tables were found in this database.", MB_ICONINFORMATION);
             }
             catch (const std::exception& error)
             {
                 exportButton_.EnableWindow(FALSE);
-                status_.SetWindowText(L"Не удалось загрузить таблицы.");
+                status_.SetWindowText(L"Could not load tables.");
                 AfxMessageBox(FromUtf8(error.what()), MB_ICONERROR);
             }
         }
@@ -192,25 +192,25 @@ namespace
             const int selected = tableCombo_.GetCurSel();
             if (database.IsEmpty() || output.IsEmpty() || selected == CB_ERR)
             {
-                AfxMessageBox(L"Выберите базу данных, таблицу и файл CSV.", MB_ICONINFORMATION);
+                AfxMessageBox(L"Choose a database, table, and output CSV file.", MB_ICONINFORMATION);
                 return;
             }
             tableCombo_.GetLBText(selected, table);
             exportButton_.EnableWindow(FALSE);
-            status_.SetWindowText(L"Идёт экспорт...");
+            status_.SetWindowText(L"Exporting...");
             try
             {
                 const std::size_t rows = access_csv::ExportTable(database.GetString(),
                     table.GetString(), output.GetString());
                 CString message;
-                message.Format(L"Готово. Экспортировано строк: %llu.",
+                message.Format(L"Done. Exported %llu row(s).",
                     static_cast<unsigned long long>(rows));
                 status_.SetWindowText(message);
                 AfxMessageBox(message, MB_ICONINFORMATION);
             }
             catch (const std::exception& error)
             {
-                status_.SetWindowText(L"Экспорт не выполнен.");
+                status_.SetWindowText(L"Export failed.");
                 AfxMessageBox(FromUtf8(error.what()), MB_ICONERROR);
             }
             exportButton_.EnableWindow(TRUE);
