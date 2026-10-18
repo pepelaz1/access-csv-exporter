@@ -188,7 +188,6 @@ namespace
             INITCOMMONCONTROLSEX commonControls{ sizeof(INITCOMMONCONTROLSEX), ICC_WIN95_CLASSES };
             InitCommonControlsEx(&commonControls);
             CWinApp::InitInstance();
-            AfxEnableControlContainer();
             auto* window = new MainWindow();
             if (!window->GetSafeHwnd())
             {
