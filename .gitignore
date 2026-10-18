@@ -1,5 +1,8 @@
 bin/
 obj/
+AccessCsvExporter.Mfc/build/
+.vs/
+*.VC.db
 *.accdb
 *.mdb
 *.csv

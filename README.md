@@ -1,5 +1,18 @@
 # Access CSV Exporter
 
+This repository contains two small Windows examples for exporting a Microsoft Access table to CSV:
+
+- **[AccessCsvExporter.Mfc](AccessCsvExporter.Mfc/AccessCsvExporter.Mfc.sln)** — a native C++/MFC desktop window. Choose an `.accdb` or `.mdb` file, load its tables, select one, choose an output path, and export it.
+- **AccessCsvExporter** — the original C#/.NET 8 console version described below.
+
+## C++/MFC desktop version
+
+Open `AccessCsvExporter.Mfc/AccessCsvExporter.Mfc.sln` in Visual Studio 2022. In Visual Studio Installer, select **Modify → Individual components → C++ MFC for latest v143 build tools (x86 & x64)**. Also install the MSVC v143 x64 tools and Windows SDK. Select **Release | x64** and **Build Solution**. Run `AccessCsvExporter.Mfc/build/Release/AccessCsvExporter.Mfc.exe`.
+
+The 64-bit Microsoft Access ODBC driver (`Microsoft Access Driver (*.mdb, *.accdb)`) must be installed. The application reads table names through ODBC, streams rows into a UTF-8 CSV with a BOM, doubles embedded quotes, quotes fields containing commas or line breaks, and replaces the destination only after a complete export. Binary columns are explicitly rejected by this small demo. Access itself is not required, but the matching ODBC driver is.
+
+The native CSV formatter and ODBC code can be compiled and smoke-tested without MFC using `AccessCsvExporter.Mfc/build-native-tests.cmd`. This checks Unicode CSV quoting and the missing-database error. On the machine where this sample was prepared, those checks passed; the full MFC app could not be built because the optional MFC component was not installed. Export against a real Access database still requires an end-to-end check after MFC installation.
+
 A small C#/.NET 8 Windows console example that reads one table from a Microsoft Access `.accdb` or `.mdb` database and exports it to UTF-8 CSV. It validates that the table exists, streams rows instead of loading the whole database into memory, handles commas/quotes/newlines, and writes through a temporary file so an interrupted export does not replace an existing CSV.
 
 ## Requirements
