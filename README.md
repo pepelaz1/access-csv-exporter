@@ -17,6 +17,8 @@ The 64-bit Microsoft Access ODBC driver (`Microsoft Access Driver (*.mdb, *.accd
 
 The native CSV formatter and ODBC code can be compiled and smoke-tested without MFC using `AccessCsvExporter.Mfc/build-native-tests.cmd`. This checks Unicode CSV quoting and the missing-database error. The GitHub Actions build passes those checks and builds the MFC EXE. The EXE was also launched on Windows. Export against a real Access database has not yet been tested end to end.
 
+## C#/.NET console version
+
 A small C#/.NET 8 Windows console example that reads one table from a Microsoft Access `.accdb` or `.mdb` database and exports it to UTF-8 CSV. It validates that the table exists, streams rows instead of loading the whole database into memory, handles commas/quotes/newlines, and writes through a temporary file so an interrupted export does not replace an existing CSV.
 
 ## Requirements
