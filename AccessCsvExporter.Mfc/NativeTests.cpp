@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <stdexcept>
+#include <iostream>
 
 int main()
 {
@@ -13,7 +14,11 @@ int main()
         "Code,Description,Note\r\n"
         "42,\"Камера, 4K \"\"Pro\"\"\nновая\",\r\n";
     if (output.str() != expected)
-        throw std::runtime_error("CSV quoting or Unicode formatting failed.");
+    {
+        std::cerr << "CSV quoting or Unicode formatting failed. Output bytes: "
+                  << output.str().size() << ", expected bytes: " << expected.size() << '\n';
+        return 1;
+    }
 
     bool missingDatabaseReported = false;
     try
@@ -25,5 +30,8 @@ int main()
         missingDatabaseReported = true;
     }
     if (!missingDatabaseReported)
-        throw std::runtime_error("Missing Access database was not reported.");
+    {
+        std::cerr << "Missing Access database was not reported.\n";
+        return 1;
+    }
 }
