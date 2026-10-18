@@ -1,0 +1,32 @@
+name: Build MFC desktop sample
+
+on:
+  push:
+    paths:
+      - 'AccessCsvExporter.Mfc/**'
+      - '.github/workflows/mfc-windows.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and run native CSV checks
+        shell: pwsh
+        run: |
+          $msbuild = 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe'
+          & $msbuild AccessCsvExporter.Mfc/NativeTests.vcxproj /p:Configuration=Release /p:Platform=x64 /verbosity:minimal
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          & AccessCsvExporter.Mfc/build/Tests/NativeTests.exe
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Build MFC desktop app
+        shell: pwsh
+        run: |
+          $msbuild = 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe'
+          & $msbuild AccessCsvExporter.Mfc/AccessCsvExporter.Mfc.sln /p:Configuration=Release /p:Platform=x64 /verbosity:minimal
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AccessCsvExporter-MFC-x64
+          path: AccessCsvExporter.Mfc/build/Release/AccessCsvExporter.Mfc.exe
